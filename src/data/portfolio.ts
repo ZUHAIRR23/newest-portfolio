@@ -54,14 +54,14 @@ export const portfolioData = {
         {
             name: "Athir TPQ",
             description: "A comprehensive web-based application designed for the management of Islamic education centers (TPQ).",
-            tech: ["Laravel", "MySQL", "Bootstrap"],
+            tech: ["React JS", "Tailwind CSS", "Supabase"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Streamlined administrative tasks for education centers.",
             size: "large",
-            image: "/images/projects/athir-tpq.png",
+            image: "/images/projects/athir_tpq.png",
             year: "2025",
-            client: "Laravel"
+            client: "React JS"
         },
         {
             name: "Tandain",
@@ -71,69 +71,69 @@ export const portfolioData = {
             demo: "https://demo.com",
             results: "Enhanced data accessibility and organization.",
             size: "medium",
-            image: "/images/projects/tandain.png",
+            image: "/images/projects/tandain-web.png",
             year: "2025",
             client: "React"
         },
         {
             name: "BLM Koperasi",
             description: "A specialized Sharia cooperative financing platform built to facilitate transparent financial operations.",
-            tech: ["PHP", "Laravel", "MySQL"],
+            tech: ["Laravel", "PHP", "MySQL"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Digitalized cooperative financing processes.",
             size: "medium",
-            image: "/images/projects/blm-koperasi.png",
+            image: "/images/projects/blm_koperasi.png",
             year: "2025",
             client: "Laravel"
         },
         {
             name: "Agustian Coach",
             description: "A fitness coaching platform providing personalized training and progress tracking for clients.",
-            tech: ["Next.js", "Tailwind CSS", "Supabase"],
+            tech: ["Laravel", "Tailwind CSS", "MySQL"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Enabled remote coaching and client management.",
             size: "small",
-            image: "/images/projects/agustian-coach.png",
+            image: "/images/projects/agustian_coach.png",
             year: "2026",
-            client: "Next.js"
+            client: "Laravel"
         },
         {
             name: "Attendance App",
             description: "A mobile application with location validation for employee attendance tracking.",
-            tech: ["Flutter", "Firebase"],
+            tech: ["Flutter", "Dart"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Improved attendance accuracy through GPS validation.",
             size: "small",
-            image: "/images/projects/attendance-app.png",
+            image: "/images/projects/attendance_1.png",
             year: "2025",
             client: "Flutter"
         },
         {
             name: "Movie App",
             description: "A mobile application for searching movies and viewing detailed information and ratings.",
-            tech: ["React Native", "TMDB API"],
+            tech: ["Flutter", "TMDB API", "Dart"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Provided a seamless movie discovery experience.",
             size: "small",
-            image: "/images/projects/movie-app.png",
+            image: "/images/projects/movie_1.png",
             year: "2024",
-            client: "React Native"
+            client: "Flutter"
         },
         {
             name: "Schedule Generator",
             description: "An automated schedule planning mobile application for optimized time management.",
-            tech: ["React Native", "TypeScript"],
+            tech: ["Flutter", "TypeScript"],
             github: "https://github.com",
             demo: "https://demo.com",
             results: "Automated complex scheduling tasks.",
             size: "small",
-            image: "/images/projects/movie-app.png",
+            image: "/images/projects/schedule_1.png",
             year: "2024",
-            client: "React Native"
+            client: "Flutter"
         }
     ],
     contact: {
