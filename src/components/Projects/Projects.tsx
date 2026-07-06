@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { portfolioData } from "@/data/portfolio";
 import Image from "next/image";
 import { Monitor, Smartphone, Layers } from "lucide-react";
@@ -17,11 +17,6 @@ interface Project {
     image: string;
     year: string;
     client: string;
-}
-
-interface GridConfig {
-    colSpan: string;
-    height: string;
 }
 
 // Additional images for mobile projects that have multiple screenshots
@@ -76,22 +71,26 @@ const projectMeta: Record<string, { category: "web" | "mobile"; glow: string; co
     }
 };
 
-const getGridConfig = (index: number) => {
-    const configs = [
-        { colSpan: "md:col-span-8", height: "min-h-[440px] md:h-[450px]" },
-        { colSpan: "md:col-span-4", height: "min-h-[445px] md:h-[450px]" },
-        { colSpan: "md:col-span-4", height: "min-h-[445px] md:h-[440px]" },
-        { colSpan: "md:col-span-4", height: "min-h-[445px] md:h-[440px]" },
-        { colSpan: "md:col-span-4", height: "min-h-[445px] md:h-[440px]" },
-        { colSpan: "md:col-span-6", height: "min-h-[440px] md:h-[420px]" },
-        { colSpan: "md:col-span-6", height: "min-h-[440px] md:h-[420px]" },
-    ];
-    return configs[index % configs.length];
-};
+interface ProjectCardProps {
+    project: Project;
+    i: number;
+    progress: any;
+    targetScale: number;
+    range: [number, number];
+}
 
-function ProjectCard({ project, config }: { project: Project; config: GridConfig }) {
+function ProjectCard({ project, i, progress, targetScale, range }: ProjectCardProps) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [coords, setCoords] = useState({ x: 0, y: 0 });
+    const [isDesktop, setIsDesktop] = useState(false);
+
+    useEffect(() => {
+        const media = window.matchMedia("(min-width: 768px)");
+        setIsDesktop(media.matches);
+        const listener = () => setIsDesktop(media.matches);
+        media.addEventListener("change", listener);
+        return () => media.removeEventListener("change", listener);
+    }, []);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!cardRef.current) return;
@@ -109,183 +108,147 @@ function ProjectCard({ project, config }: { project: Project; config: GridConfig
         hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(99,102,241,0.25)]",
     };
 
-    const isFeatured = config.colSpan === "md:col-span-8";
     const isMobile = meta.category === "mobile";
     const extraImages = mobileExtraImages[project.name];
 
+    // Localized useScroll target ref
+    const containerRef = useRef<HTMLDivElement>(null);
+    const { scrollYProgress: cardProgress } = useScroll({
+        target: containerRef,
+        offset: ["start end", "start start"]
+    });
+
+    // Image transitions on desktop scroll
+    const imageScale = useTransform(cardProgress, [0, 1], [1.8, 1]);
+    const phoneY1 = useTransform(cardProgress, [0, 1], [60, 0]);
+    const phoneY2 = useTransform(cardProgress, [0, 1], [120, 0]);
+    const phoneY3 = useTransform(cardProgress, [0, 1], [180, 0]);
+
+    // Card scale transform only active on desktop
+    const scale = useTransform(progress, range, [1, isDesktop ? targetScale : 1]);
+
     return (
-        <motion.div
-            ref={cardRef}
-            layout
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{
-                duration: 0.6,
-                ease: [0.16, 1, 0.3, 1],
-            }}
-            onMouseMove={handleMouseMove}
-            className={`group relative overflow-hidden rounded-[2rem] border border-white/5 bg-neutral-900/20 backdrop-blur-md transition-all duration-500 ease-out hover:border-white/10 ${meta.hoverGlow} ${config.colSpan} ${config.height}`}
-            style={{
-                "--mouse-x": `${coords.x}px`,
-                "--mouse-y": `${coords.y}px`,
-            } as React.CSSProperties}
-        >
-            {/* Custom Mouse Spotlight Background Glow */}
-            <div
-                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
+        <div ref={containerRef} className="w-full md:h-screen md:sticky md:top-0 flex items-start justify-center pt-8 md:pt-[15vh]">
+            <motion.div
+                ref={cardRef}
                 style={{
-                    background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), ${meta.glow}, transparent 80%)`,
-                }}
-            />
-
-            {/* Glowing spot pointer tracking border gradient */}
-            <div
-                className="pointer-events-none absolute -inset-[1px] rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
-                style={{
-                    background: `radial-gradient(120px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.15), transparent 70%), 
-                                radial-gradient(280px circle at var(--mouse-x) var(--mouse-y), ${meta.glow.replace("0.12", "0.4")}, transparent 85%)`,
-                    padding: "1px",
-                }}
+                    scale,
+                    top: isDesktop ? `calc(${i * 24}px)` : "auto",
+                    transformOrigin: "top",
+                    "--mouse-x": `${coords.x}px`,
+                    "--mouse-y": `${coords.y}px`,
+                } as any}
+                onMouseMove={handleMouseMove}
+                className={`group relative overflow-hidden rounded-[2rem] border border-white/5 bg-neutral-950/80 backdrop-blur-md transition-all duration-300 ease-out hover:border-white/10 ${meta.hoverGlow} w-full md:h-[480px] flex flex-col md:flex-row justify-between gap-8 p-6 md:p-8 cursor-default`}
             >
-                <div className="w-full h-full rounded-[31px] bg-neutral-950/90" />
-            </div>
+                {/* Custom Mouse Spotlight Background Glow */}
+                <div
+                    className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0"
+                    style={{
+                        background: `radial-gradient(350px circle at var(--mouse-x) var(--mouse-y), ${meta.glow}, transparent 80%)`,
+                    }}
+                />
 
-            {/* Interior Container */}
-            <div className="relative w-full h-full p-6 md:p-8 flex flex-col z-20 justify-between">
-                {isFeatured ? (
-                    /* Horizontally Split Card for Desktop Featured Item */
-                    <div className="flex flex-col md:flex-row gap-8 w-full h-full items-center">
-                        {/* Info details (Left column) */}
-                        <div className="w-full md:w-1/2 flex flex-col justify-between h-full py-1">
-                            <div>
-                                <div className="flex items-center gap-3 text-neutral-400 text-xs font-semibold tracking-widest uppercase mb-4">
-                                    <span className="text-white/60">{project.year}</span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
-                                    <span className={`bg-gradient-to-r ${meta.color} bg-clip-text text-transparent`}>
-                                        {project.client}
-                                    </span>
-                                </div>
+                {/* Glowing spot pointer tracking border gradient */}
+                <div
+                    className="pointer-events-none absolute -inset-[1px] rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
+                    style={{
+                        background: `radial-gradient(120px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.15), transparent 70%), 
+                                    radial-gradient(280px circle at var(--mouse-x) var(--mouse-y), ${meta.glow.replace("0.12", "0.4")}, transparent 85%)`,
+                        padding: "1px",
+                    }}
+                >
+                    <div className="w-full h-full rounded-[31px] bg-neutral-950/90" />
+                </div>
 
-                                <h3 className="text-2xl md:text-4xl font-black text-white tracking-tight uppercase mb-4 transition-transform duration-300 group-hover:translate-x-1">
-                                    {project.name}
-                                </h3>
-
-                                <p className="text-neutral-400 text-sm md:text-base leading-relaxed mb-6">
-                                    {project.description}
-                                </p>
-
-                                <div className="border-t border-white/5 pt-4 mb-6">
-                                    <span className="text-[10px] font-bold tracking-widest uppercase text-neutral-500 block mb-1.5">Key Outcome</span>
-                                    <p className="text-white/90 text-sm italic">“{project.results}”</p>
-                                </div>
-                            </div>
-
-                            <div>
-                                {/* Tech Tags */}
-                                <div className="flex flex-wrap gap-2">
-                                    {project.tech.map((t) => (
-                                        <span key={t} className="px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-lg bg-neutral-950/80 text-white/70 border border-white/5">
-                                            {t}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                {/* Left Column - Info Details */}
+                <div className="w-full md:w-1/2 flex flex-col justify-between h-full py-1 z-20 relative">
+                    <div>
+                        <div className="flex items-center gap-3 text-neutral-400 text-xs font-semibold tracking-widest uppercase mb-4">
+                            <span className="text-white/60">{project.year}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-neutral-700" />
+                            <span className={`bg-gradient-to-r ${meta.color} bg-clip-text text-transparent`}>
+                                {project.client}
+                            </span>
                         </div>
 
-                        {/* Showcase mockup image (Right column) */}
-                        {isMobile && extraImages ? (
-                            <div className="w-full md:w-1/2 h-52 md:h-full relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-neutral-900 to-neutral-950 flex items-center justify-center gap-3 p-4">
-                                {extraImages.slice(0, 3).map((img, i) => (
-                                    <div key={i} className="relative h-full flex-1 max-w-[130px] transition-transform duration-500 ease-out group-hover:scale-105" style={{ transitionDelay: `${i * 60}ms` }}>
+                        <h3 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase mb-4 transition-transform duration-300 group-hover:translate-x-1">
+                            {project.name}
+                        </h3>
+
+                        <p className="text-neutral-400 text-sm md:text-base leading-relaxed mb-6">
+                            {project.description}
+                        </p>
+
+                        <div className="border-t border-white/5 pt-4 mb-6">
+                            <span className="text-[10px] font-bold tracking-widest uppercase text-neutral-500 block mb-1.5">Key Outcome</span>
+                            <p className="text-white/90 text-sm italic">“{project.results}”</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-auto">
+                        {/* Tech Tags */}
+                        <div className="flex flex-wrap gap-2">
+                            {project.tech.map((t) => (
+                                <span key={t} className="px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-lg bg-neutral-950/80 text-white/70 border border-white/5">
+                                    {t}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Column - Showcase image / mockup */}
+                <div className="w-full md:w-1/2 h-52 md:h-full relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-br from-neutral-900 to-neutral-950 flex items-center justify-center p-4 z-20">
+                    {isMobile && extraImages ? (
+                        <div className="flex items-center justify-center gap-4 w-full h-full overflow-hidden">
+                            {extraImages.map((img, idxImage) => {
+                                const yTransform = idxImage === 0 ? phoneY1 : idxImage === 1 ? phoneY2 : phoneY3;
+                                return (
+                                    <motion.div
+                                        key={idxImage}
+                                        className="relative h-full w-[110px] md:w-[130px] transition-transform duration-500 ease-out group-hover:scale-105"
+                                        style={{
+                                            y: isDesktop ? yTransform : 0,
+                                            transitionDelay: `${idxImage * 60}ms`
+                                        } as any}
+                                    >
                                         <Image
                                             src={img}
-                                            alt={`${project.name} screen ${i + 1}`}
+                                            alt={`${project.name} screen ${idxImage + 1}`}
                                             fill
-                                            className="object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
-                                            sizes="130px"
+                                            className="object-contain drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
+                                            sizes="(max-width: 768px) 110px, 130px"
                                         />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="w-full md:w-1/2 h-52 md:h-full relative overflow-hidden rounded-2xl border border-white/5">
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="relative w-full h-full overflow-hidden rounded-xl border border-white/5 bg-neutral-950">
+                            <motion.div
+                                className="relative w-full h-full"
+                                style={{ scale: isDesktop ? imageScale : 1 }}
+                            >
                                 <Image
                                     src={project.image}
                                     alt={project.name}
                                     fill
-                                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                    className="object-cover transition-transform duration-700 ease-out"
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                 />
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    /* Vertically Stacked Card for Medium/Small Bento items */
-                    <div className="flex flex-col h-full justify-between">
-                        {isMobile && extraImages ? (
-                            <div className="relative w-full h-48 overflow-hidden rounded-2xl border border-white/5 mb-6 flex-shrink-0 bg-gradient-to-br from-neutral-900 to-neutral-950 flex items-center justify-center gap-2 p-3">
-                                {extraImages.slice(0, 2).map((img, i) => (
-                                    <div key={i} className="relative h-full flex-1 max-w-[100px] transition-transform duration-500 ease-out group-hover:scale-105" style={{ transitionDelay: `${i * 60}ms` }}>
-                                        <Image
-                                            src={img}
-                                            alt={`${project.name} screen ${i + 1}`}
-                                            fill
-                                            className="object-contain drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
-                                            sizes="100px"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="relative w-full h-48 overflow-hidden rounded-2xl border border-white/5 mb-6 flex-shrink-0">
-                                <Image
-                                    src={project.image}
-                                    alt={project.name}
-                                    fill
-                                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                                    sizes="(max-width: 768px) 100vw, 30vw"
-                                />
-                            </div>
-                        )}
-
-                        <div className="flex-grow flex flex-col justify-between">
-                            <div>
-                                <div className="flex items-center gap-2 text-neutral-400 text-[10px] font-bold tracking-widest uppercase mb-3">
-                                    <span>{project.year}</span>
-                                    <span className="w-1 h-1 rounded-full bg-neutral-700" />
-                                    <span className={`bg-gradient-to-r ${meta.color} bg-clip-text text-transparent`}>
-                                        {project.client}
-                                    </span>
-                                </div>
-                                <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-wide mb-2.5 transition-transform duration-300 group-hover:translate-x-1">
-                                    {project.name}
-                                </h3>
-                                <p className="text-neutral-400 text-xs md:text-sm line-clamp-3 mb-4 leading-relaxed">
-                                    {project.description}
-                                </p>
-                            </div>
-
-                            <div>
-                                {/* Tech Tags */}
-                                <div className="flex flex-wrap gap-1.5">
-                                    {project.tech.map((t) => (
-                                        <span key={t} className="px-2.5 py-0.5 text-[9px] uppercase font-bold tracking-widest rounded-md bg-neutral-950/80 text-white/70 border border-white/5">
-                                            {t}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
+                            </motion.div>
                         </div>
-                    </div>
-                )}
-            </div>
-        </motion.div>
+                    )}
+                </div>
+            </motion.div>
+        </div>
     );
 }
 
 export default function Projects() {
     const [activeCategory, setActiveCategory] = useState<"all" | "web" | "mobile">("all");
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const categories = [
         { id: "all", label: "All Projects", icon: Layers },
@@ -299,8 +262,13 @@ export default function Projects() {
         return meta.category === activeCategory;
     });
 
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"]
+    });
+
     return (
-        <section id="projects" className="relative w-full bg-black overflow-hidden py-32">
+        <section id="projects" className="relative w-full bg-black overflow-x-clip py-32">
             {/* Soft Ambient Background Light */}
             <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
             <div className="absolute bottom-1/4 left-1/3 w-[455px] h-[455px] rounded-full bg-cyan-600/5 blur-[100px] pointer-events-none" />
@@ -348,24 +316,27 @@ export default function Projects() {
                 </div>
             </div>
 
-            {/* Bento Grid */}
-            <motion.div
-                layout
-                className="grid grid-cols-1 md:grid-cols-12 gap-8 px-6 md:px-12 max-w-7xl mx-auto relative z-30"
+            {/* Stacked Parallax Scroll Cards */}
+            <div
+                ref={containerRef}
+                className="flex flex-col gap-12 md:gap-0 px-6 md:px-12 max-w-5xl mx-auto relative z-30 pb-[10vh]"
             >
                 <AnimatePresence mode="popLayout">
                     {filteredProjects.map((project, idx) => {
-                        const config = getGridConfig(idx);
+                        const targetScale = 1 - ((filteredProjects.length - idx) * 0.05);
                         return (
                             <ProjectCard
                                 key={project.name}
                                 project={project}
-                                config={config}
+                                i={idx}
+                                progress={scrollYProgress}
+                                targetScale={targetScale}
+                                range={[idx * (1 / filteredProjects.length), 1]}
                             />
                         );
                     })}
                 </AnimatePresence>
-            </motion.div>
+            </div>
         </section>
     );
 }
