@@ -4,16 +4,24 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useLenis } from "lenis/react";
 
 const navItems = [
     { name: "About", href: "#about" },
     { name: "Experience", href: "#experience" },
     { name: "Projects", href: "#projects" },
-    { name: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
+    const lenis = useLenis();
+
+    const handleScrollClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        if (href.startsWith("#")) {
+            e.preventDefault();
+            lenis?.scrollTo(href, { duration: 1.2 });
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,6 +55,7 @@ export default function Navbar() {
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                onClick={(e) => handleScrollClick(e, item.href)}
                                 className="text-sm font-medium text-secondary hover:text-white transition-colors"
                             >
                                 {item.name}
@@ -55,6 +64,7 @@ export default function Navbar() {
                     </div>
                     <Link
                         href="#contact"
+                        onClick={(e) => handleScrollClick(e, "#contact")}
                         className="bg-white text-black px-4 py-1.5 rounded-full text-sm font-semibold hover:bg-white/90 transition-colors"
                     >
                         Hire Me

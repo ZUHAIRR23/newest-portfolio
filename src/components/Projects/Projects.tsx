@@ -41,15 +41,15 @@ const projectMeta: Record<string, { category: "web" | "mobile"; glow: string; co
     },
     "BLM Koperasi": {
         category: "web",
-        glow: "rgba(99, 102, 241, 0.12)",
-        color: "from-indigo-500 to-purple-500",
-        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(99,102,241,0.25)]",
+        glow: "rgba(14, 165, 233, 0.12)",
+        color: "from-blue-600 to-sky-400",
+        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(14,165,233,0.25)]",
     },
     "Agustian Coach": {
         category: "web",
-        glow: "rgba(139, 92, 246, 0.12)",
-        color: "from-violet-500 to-fuchsia-500",
-        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(139,92,246,0.25)]",
+        glow: "rgba(16, 185, 129, 0.12)",
+        color: "from-emerald-500 to-teal-500",
+        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(16,185,129,0.25)]",
     },
     "Attendance App": {
         category: "mobile",
@@ -103,9 +103,9 @@ function ProjectCard({ project, i, progress, targetScale, range }: ProjectCardPr
 
     const meta = projectMeta[project.name] || {
         category: "web",
-        glow: "rgba(99, 102, 241, 0.12)",
-        color: "from-indigo-500 to-purple-500",
-        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(99,102,241,0.25)]",
+        glow: "rgba(14, 165, 233, 0.12)",
+        color: "from-blue-600 to-sky-400",
+        hoverGlow: "hover:shadow-[0_0_35px_-5px_rgba(14,165,233,0.25)]",
     };
 
     const isMobile = meta.category === "mobile";
@@ -128,7 +128,7 @@ function ProjectCard({ project, i, progress, targetScale, range }: ProjectCardPr
     const scale = useTransform(progress, range, [1, isDesktop ? targetScale : 1]);
 
     return (
-        <div ref={containerRef} className="w-full md:h-screen md:sticky md:top-0 flex items-start justify-center pt-8 md:pt-[15vh]">
+        <div ref={containerRef} className="w-full md:h-[calc(100vh-128px)] md:sticky md:top-32 flex items-start justify-center pt-8 md:pt-4">
             <motion.div
                 ref={cardRef}
                 style={{
@@ -139,7 +139,7 @@ function ProjectCard({ project, i, progress, targetScale, range }: ProjectCardPr
                     "--mouse-y": `${coords.y}px`,
                 } as any}
                 onMouseMove={handleMouseMove}
-                className={`group relative overflow-hidden rounded-[2rem] border border-white/5 bg-neutral-950/80 backdrop-blur-md transition-all duration-300 ease-out hover:border-white/10 ${meta.hoverGlow} w-full md:h-[480px] flex flex-col md:flex-row justify-between gap-8 p-6 md:p-8 cursor-default`}
+                className={`group relative overflow-hidden rounded-[2rem] border border-white/10 bg-neutral-900/50 backdrop-blur-xl transition-all duration-300 ease-out hover:border-white/20 ${meta.hoverGlow} w-full md:h-[480px] flex flex-col md:flex-row justify-between gap-8 p-6 md:p-8 cursor-default`}
             >
                 {/* Custom Mouse Spotlight Background Glow */}
                 <div
@@ -158,7 +158,7 @@ function ProjectCard({ project, i, progress, targetScale, range }: ProjectCardPr
                         padding: "1px",
                     }}
                 >
-                    <div className="w-full h-full rounded-[31px] bg-neutral-950/90" />
+                    <div className="w-full h-full rounded-[31px] bg-neutral-900/90" />
                 </div>
 
                 {/* Left Column - Info Details */}
@@ -270,16 +270,16 @@ export default function Projects() {
     return (
         <section id="projects" className="relative w-full bg-black overflow-x-clip py-32">
             {/* Soft Ambient Background Light */}
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-indigo-500/5 blur-[120px] pointer-events-none" />
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none" />
             <div className="absolute bottom-1/4 left-1/3 w-[455px] h-[455px] rounded-full bg-cyan-600/5 blur-[100px] pointer-events-none" />
 
             {/* Section Header */}
-            <div className="px-6 md:px-12 max-w-7xl mx-auto mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-30">
+            <div className="px-6 md:px-12 max-w-7xl mx-auto mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-30">
                 <div>
                     <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-accent px-3.5 py-1.5 bg-accent/10 w-fit rounded-full mb-5 inline-block">
                         04 / PROJECTS
                     </span>
-                    <h2 className="text-4xl md:text-7xl font-black tracking-tighter italic uppercase text-white">
+                    <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-white">
                         Featured Work
                     </h2>
                     <p className="text-neutral-400 max-w-xl text-base md:text-lg mt-4 leading-relaxed">
@@ -289,7 +289,7 @@ export default function Projects() {
             </div>
 
             {/* Premium Category Filter Bar */}
-            <div className="flex flex-wrap items-center justify-center gap-3 px-6 mb-16 relative z-30">
+            <div className="sticky top-20 flex flex-wrap items-center justify-center gap-3 px-6 mb-8 z-40">
                 <div className="flex bg-neutral-900/30 p-1.5 rounded-full border border-white/5 backdrop-blur-md shadow-2xl relative">
                     {categories.map((cat) => {
                         const Icon = cat.icon;

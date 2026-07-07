@@ -40,6 +40,8 @@ export default function Contact() {
                         <Magnetic key={i}>
                             <Link
                                 href={link.href}
+                                target={link.href.startsWith("http") ? "_blank" : undefined}
+                                rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                                 className="group flex items-center gap-3 px-8 py-4 rounded-full border border-white/10 bg-white/5 hover:bg-white hover:text-black transition-all duration-300"
                             >
                                 {link.icon}

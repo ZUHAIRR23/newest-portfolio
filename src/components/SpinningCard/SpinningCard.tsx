@@ -55,7 +55,7 @@ export default function SpinningCard() {
                         >
                             {/* Front Face — Greyscale */}
                             <div
-                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_20px_60px_rgba(124,58,237,0.15)]"
+                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_20px_60px_rgba(14,165,233,0.15)]"
                                 style={{ backfaceVisibility: "hidden" }}
                             >
                                 <Image
@@ -70,7 +70,7 @@ export default function SpinningCard() {
 
                             {/* Back Face — Colored */}
                             <div
-                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border border-accent/30 shadow-[0_20px_60px_rgba(124,58,237,0.25)]"
+                                className="absolute inset-0 w-full h-full rounded-2xl overflow-hidden border border-accent/30 shadow-[0_20px_60px_rgba(14,165,233,0.25)]"
                                 style={{
                                     backfaceVisibility: "hidden",
                                     transform: "rotateY(180deg)",

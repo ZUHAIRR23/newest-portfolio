@@ -4,7 +4,6 @@ import About from "@/components/About/About";
 import Experience from "@/components/Experience/Experience";
 import TechStack from "@/components/TechStack/TechStack";
 import Projects from "@/components/Projects/Projects";
-import Testimonials from "@/components/Testimonials/Testimonials";
 import Contact from "@/components/Contact/Contact";
 import SpinningCard from "@/components/SpinningCard/SpinningCard";
 
@@ -18,7 +17,6 @@ export default function Home() {
       <Experience />
       <TechStack />
       <Projects />
-      <Testimonials />
       <Contact />
     </main>
   );

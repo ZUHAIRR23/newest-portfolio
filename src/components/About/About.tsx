@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { portfolioData } from "@/data/portfolio";
 import { fadeUp } from "@/animations/presets";
 import { ArrowUpRight } from "lucide-react";
+import { useLenis } from "lenis/react";
 
 export default function About() {
     const { about } = portfolioData;
+    const lenis = useLenis();
 
     return (
         <section id="about" className="relative w-full py-32 md:py-40 px-6 bg-black flex justify-center overflow-visible">
@@ -67,6 +69,10 @@ export default function About() {
 
                         <a
                             href="#contact"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                lenis?.scrollTo("#contact", { duration: 1.2 });
+                            }}
                             className="group flex items-center gap-2 text-white font-semibold text-base hover:text-accent transition-colors w-fit mt-4"
                         >
                             Get Started
