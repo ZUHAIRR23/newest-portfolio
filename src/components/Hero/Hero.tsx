@@ -65,7 +65,7 @@ export default function Hero() {
                 transition={{ delay: 1.2, duration: 1 }}
                 className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-secondary/40"
             >
-                <span className="text-[10px] uppercase tracking-widest font-bold">Scroll to explore</span>
+                <span className="text-[10px] uppercase tracking-widest font-bold">Scroll down</span>
                 <motion.div
                     animate={{ y: [0, 8, 0] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
