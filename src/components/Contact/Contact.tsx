@@ -58,10 +58,6 @@ export default function Contact() {
                     className="mt-32 pt-12 border-t border-white/5 w-full flex flex-col md:flex-row justify-between items-center gap-8 text-secondary/40 text-[10px] uppercase tracking-[0.2em] font-bold"
                 >
                     <div>© 2026 ABDURRAHMAN ZUHAIR</div>
-                    <div className="flex gap-8">
-                        <Link href="#" className="hover:text-accent transition-colors">Privacy Policy</Link>
-                        <Link href="#" className="hover:text-accent transition-colors">Terms of Service</Link>
-                    </div>
                     <div>DEVELOPED WITH NEXT.JS 15</div>
                 </motion.footer>
             </div>
