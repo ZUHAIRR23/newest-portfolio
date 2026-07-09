@@ -1,29 +1,88 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/animations/presets";
 import { Mail, Globe, Github, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import Magnetic from "@/components/Layout/Magnetic";
+import styles from "./Contact.module.css";
+
+interface Text3DProps {
+    primary: string;
+    secondary: string;
+}
+
+function Text3D({ primary, secondary }: Text3DProps) {
+    return (
+        <span className={styles.text3dWrapper}>
+            <span className={`${styles.text3dPrimary} block`}>{primary}</span>
+            <span className={`${styles.text3dSecondary} block`}>{secondary}</span>
+        </span>
+    );
+}
 
 export default function Contact() {
+    const planeRef = useRef<HTMLDivElement>(null);
+
+    const manageMouseMove = (e: React.MouseEvent) => {
+        if (!planeRef.current) return;
+        const { clientX, clientY } = e;
+        const { innerWidth, innerHeight } = window;
+
+        // Calculate normalized coordinates from -0.5 to 0.5
+        const x = clientX / innerWidth - 0.5;
+        const y = clientY / innerHeight - 0.5;
+
+        const maxRotate = 25; // Max tilt rotation in degrees
+        const rotateY = x * maxRotate;
+        const rotateX = -y * maxRotate;
+
+        const perspective = innerWidth * 1.5;
+
+        planeRef.current.style.transition = "transform 0.1s ease-out";
+        planeRef.current.style.transform = `perspective(${perspective}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+
+    const manageMouseLeave = () => {
+        if (!planeRef.current) return;
+        const perspective = window.innerWidth * 1.5;
+        planeRef.current.style.transition = "transform 0.5s ease-out";
+        planeRef.current.style.transform = `perspective(${perspective}px) rotateX(0deg) rotateY(0deg)`;
+    };
+
     return (
-        <section id="contact" className="relative w-full py-32 px-6 bg-black flex justify-center overflow-hidden">
+        <section
+            id="contact"
+            className="relative w-full py-32 px-6 bg-black flex justify-center overflow-hidden"
+            onMouseMove={manageMouseMove}
+            onMouseLeave={manageMouseLeave}
+        >
             <div className="max-w-7xl w-full flex flex-col items-center text-center gap-16">
                 <motion.div
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     variants={fadeUp}
-                    className="flex flex-col gap-8"
+                    className="flex flex-col gap-8 select-none"
                 >
                     <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-accent">
                         06 / CONTACT
                     </span>
-                    <h2 className="text-[clamp(40px,8vw,120px)] font-black tracking-tighter leading-[0.9] text-white">
-                        LET'S BUILD<br />SOMETHING GREAT.
-                    </h2>
+                    <div ref={planeRef} className={styles.perspectiveContainer}>
+                        <h2 className="text-[clamp(40px,7.5vw,110px)] font-black tracking-tighter leading-[0.95] text-white flex flex-col items-center gap-2">
+                            <span className="flex flex-wrap justify-center gap-x-[0.2em]">
+                                <Text3D primary="LET'S" secondary="LET'S" />
+                                <Text3D primary="BUILD" secondary="BUILD" />
+                            </span>
+                            <span className="flex flex-wrap justify-center gap-x-[0.2em]">
+                                <Text3D primary="SOMETHING" secondary="SOMETHING" />
+                                <Text3D primary="GREAT." secondary="GREAT." />
+                            </span>
+                        </h2>
+                    </div>
                 </motion.div>
+
 
                 <motion.div
                     initial="hidden"
